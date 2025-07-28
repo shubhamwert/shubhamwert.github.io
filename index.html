@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+  <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
+    href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter:wght@400;500;700;900&amp;family=Work+Sans%3Awght%40400%3B500%3B700%3B900" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <title>Shubham Thakur - Portfolio</title>
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4?plugins=forms,container-queries"></script>
+  <!-- Add three.js library for hero animation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    /* --- Design Expert CSS with Dark Mode & Animations --- */
+    :root {
+      /* Light Mode Colors (Default) - Using off-white tones */
+      --bg-primary: #f8f8f8e7;
+      /* Softer off-white */
+      --bg-secondary: #f1f1f1;
+      /* Slightly darker off-white for contrast */
+      --text-primary: #1a1a1a;
+      /* Darker text for better contrast */
+      --text-secondary: #5a5a5a;
+      --text-headings: #1a1a1a;
+      --border-color: #e5e5e5;
+      --card-bg: #ffffff;
+      /* Cards can remain white for a layered effect */
+      --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+      --primary-accent: #0b80ee;
+      --bubble-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .dark {
+      /* Dark Mode Colors */
+      --bg-primary: #111827;
+      /* Dark blue-gray */
+      --bg-secondary: #1f2937;
+      /* Slightly lighter dark blue-gray */
+      --text-primary: #e5e7eb;
+      /* Light gray for body text */
+      --text-secondary: #9ca3af;
+      /* Muted gray for secondary text */
+      --text-headings: #ffffff;
+      --border-color: #374151;
+      --card-bg: #1f2937;
+      --card-shadow: 0 4px 6px -1px rgb(255 255 255 / 0.05), 0 2px 4px -2px rgb(255 255 255 / 0.05);
+      --bubble-color: rgba(255, 255, 255, 0.03);
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .full-page-section {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 8rem 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      position: relative;
+      /* Needed for bubble container */
+      overflow: hidden;
+      /* Hide bubbles that go off-screen */
+    }
+
+    .full-page-section.bg-secondary {
+      background-color: var(--bg-secondary);
+    }
+
+    .full-page-section.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .is-visible .stagger-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #hero {
+      opacity: 1;
+      transform: translateY(0);
+      background-color: #111827;
+      /* Dark background for hero */
+    }
+
+    #hero-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    #hero .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background-color: color-mix(in srgb, var(--bg-primary) 85%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    main {
+      padding-top: 68px;
+    }
+
+    main section:first-child {
+      min-height: calc(100vh - 68px);
+    }
+
+    h2,
+    h3,
+    h4 {
+      color: var(--text-headings);
+    }
+
+    p,
+    li {
+      color: var(--text-secondary);
+    }
+
+    .experience-role p {
+      color: var(--text-primary);
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+    }
+
+    .dark .card:hover {
+      box-shadow: 0 10px 15px -3px rgb(255 255 255 / 0.07), 0 4px 6px -2px rgb(255 255 255 / 0.07);
+    }
+
+    /* Bubble Animation */
+    .bubbles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--bubble-color);
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+
+      10%,
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-10vh);
+        opacity: 0;
+      }
+    }
+
+    /* Dark Mode Toggle Styles */
+    .theme-switch-wrapper {
+      display: flex;
+      align-items: center;
+    }
+
+    .theme-switch {
+      display: inline-block;
+      height: 24px;
+      position: relative;
+      width: 50px;
+      cursor: pointer;
+    }
+
+    .theme-switch input {
+      display: none;
+    }
+
+    .slider {
+      background-color: #ccc;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+      position: absolute;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      background-color: #fff;
+      bottom: 4px;
+      content: "";
+      height: 16px;
+      left: 4px;
+      position: absolute;
+      transition: .4s;
+      width: 16px;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: var(--primary-accent);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(26px);
+    }
+
+    .dark .slider {
+      background-color: #4a5568;
+    }
+
+    .theme-switch-wrapper .fa-sun,
+    .theme-switch-wrapper .fa-moon {
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+    }
+
+    .theme-switch-wrapper .fa-sun {
+      margin-right: 8px;
+    }
+
+    .theme-switch-wrapper .fa-moon {
+      margin-left: 8px;
+    }
+      /* Side Dot Navigation */
+      .side-nav {
+        position: fixed;
+        right: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .side-nav a {
+        width: 12px;
+        height: 12px;
+        background-color: var(--text-secondary);
+        border-radius: 50%;
+        position: relative;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        opacity: 0.5;
+      }
+      .side-nav a:hover {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+      .side-nav a.active {
+        background-color: var(--primary-accent);
+        transform: scale(1.5);
+        opacity: 1;
+      }
+      .side-nav a .tooltip {
+        position: absolute;
+        top: 50%;
+        right: 150%;
+        transform: translateY(-50%);
+        background-color: var(--text-headings);
+        color: var(--bg-primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        pointer-events: none;
+      }
+      .side-nav a:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+      }
+  </style>
+</head>
+
+<body>
+        <nav class="side-nav">
+        <a href="#hero" data-section="hero" class="active"><span class="tooltip">Home</span></a>
+        <a href="#about" data-section="about"><span class="tooltip">About</span></a>
+        <a href="#skills" data-section="skills"><span class="tooltip">Skills</span></a>
+        <a href="#experience" data-section="experience"><span class="tooltip">Experience</span></a>
+        <a href="#education" data-section="education"><span class="tooltip">Education</span></a>
+        <a href="#projects" data-section="projects"><span class="tooltip">Projects</span></a>
+        <a href="#blogs" data-section="blogs"><span class="tooltip">Blogs</span></a>
+        <a href="#contact" data-section="contact"><span class="tooltip">Contact</span></a>
+      </nav>
+  <div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden">
+    <header class="flex items-center justify-between whitespace-nowrap px-4 py-3 sm:px-10">
+      <div class="flex items-center gap-4">
+        <div class="size-8 text-blue-600">
+          <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_6_319)">
+              <path
+                d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z">
+              </path>
+            </g>
+            <defs>
+              <clipPath id="clip0_6_319">
+                <rect width="48" height="48" fill="white"></rect>
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+        <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Portfolio</h2>
+      </div>
+      <div class="flex flex-1 justify-end items-center gap-4 sm:gap-8">
+        <nav class="hidden items-center gap-4 sm:flex sm:gap-9">
+          <a class="text-sm font-medium transition-colors duration-300 hover:text-blue-600" href="#about">About</a>
+          <a class="text-sm font-medium transition-colors duration-300 hover:text-blue-600" href="#skills">Skills</a>
+          <a class="text-sm font-medium transition-colors duration-300 hover:text-blue-600"
+            href="#experience">Experience</a>
+          <a class="text-sm font-medium transition-colors duration-300 hover:text-blue-600"
+            href="#education">Education</a>
+          <a class="text-sm font-medium transition-colors duration-300 hover:text-blue-600"
+            href="#projects">Projects</a>
+          <a class="text-sm font-medium transition-colors duration-300 hover:text-blue-600" href="#blogs">Blogs</a>
+        </nav>
+        <!-- Dark Mode Toggle -->
+        <div class="theme-switch-wrapper">
+          <i class="fas fa-sun"></i>
+          <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider round"></div>
+          </label>
+          <i class="fas fa-moon"></i>
+        </div>
+        <a href="#contact"
+          class="contact-btn flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-blue-600 text-white text-sm font-bold tracking-wide transition-opacity duration-300 hover:opacity-90">
+          <span class="truncate">Contact</span>
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section id="hero" class="full-page-section justify-center items-center text-center">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-content max-w-3xl">
+          <h1 class="text-white text-5xl md:text-7xl font-black leading-tight tracking-tight">
+            Hi, I'm Shubham Thakur
+          </h1>
+          <p class="text-gray-200 text-lg md:text-xl font-normal leading-relaxed mt-4">
+            Enthusiastic Software Developer specializing in cloud infrastructure, monitoring, and deployment automation.
+          </p>
+          <a href="#projects"
+            class="mt-8 inline-block min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-blue-600 text-white text-base font-bold transition-opacity duration-300 hover:opacity-90">
+            <span class="truncate">View My Work</span>
+          </a>
+        </div>
+      </section>
+
+      <section id="about" class="full-page-section bg-secondary">
+        <div class="bubbles"></div>
+        <div class="max-w-4xl text-center z-10">
+          <h2 class="text-4xl font-bold leading-tight tracking-tight pb-12">About Me</h2>
+          <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 stagger-in">
+            <div class="w-40 h-40 rounded-full overflow-hidden flex-shrink-0 shadow-lg">
+              <img src="https://placehold.co/160x160/E0E0E0/333333?text=ST" alt="Shubham Thakur's profile picture"
+                class="w-full h-full object-cover" />
+            </div>
+            <div class="flex-1 text-left">
+              <p class="text-lg font-normal leading-relaxed pb-4">
+                I am an enthusiastic Software Developer with a strong background in designing and implementing
+                infrastructure solutions to enhance monitoring, streamline deployment processes, and optimize resource
+                management.
+              </p>
+              <p class="text-lg font-normal leading-relaxed">
+                This includes expertise in extending and implementing open-source technologies. Proficient in multiple
+                languages and technologies, I'm dedicated to supporting the entire Software Development Lifecycle.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="skills" class="full-page-section">
+        <div class="bubbles"></div>
+        <div class="w-full max-w-6xl text-center z-10">
+          <h2 class="text-4xl font-bold leading-tight tracking-tight pb-12">Technical Skills</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="card flex flex-col gap-2 p-6 rounded-lg stagger-in" style="animation-delay: 0ms;">
+              <h3 class="text-xl font-semibold"><i class="fas fa-cloud text-blue-500 mr-2"></i>Cloud Providers</h3>
+              <ul class="list-disc list-inside text-left ml-4">
+                <li>AWS</li>
+                <li>GCP</li>
+                <li>Azure</li>
+              </ul>
+            </div>
+            <div class="card flex flex-col gap-2 p-6 rounded-lg stagger-in" style="animation-delay: 100ms;">
+              <h3 class="text-xl font-semibold"><i class="fas fa-code text-green-500 mr-2"></i>Languages</h3>
+              <ul class="list-disc list-inside text-left ml-4">
+                <li>Python</li>
+                <li>Go</li>
+                <li>Bash</li>
+              </ul>
+            </div>
+            <div class="card flex flex-col gap-2 p-6 rounded-lg stagger-in" style="animation-delay: 200ms;">
+              <h3 class="text-xl font-semibold"><i class="fas fa-cogs text-gray-500 mr-2"></i>IaC & Automation</h3>
+              <ul class="list-disc list-inside text-left ml-4">
+                <li>Terraform</li>
+                <li>CloudFormation</li>
+              </ul>
+            </div>
+            <div class="card flex flex-col gap-2 p-6 rounded-lg stagger-in" style="animation-delay: 300ms;">
+              <h3 class="text-xl font-semibold"><i class="fas fa-sync-alt text-purple-500 mr-2"></i>CI/CD</h3>
+              <ul class="list-disc list-inside text-left ml-4">
+                <li>Jenkins</li>
+                <li>AWS Cloudbuild</li>
+              </ul>
+            </div>
+            <div class="card flex flex-col gap-2 p-6 rounded-lg stagger-in" style="animation-delay: 400ms;">
+              <h3 class="text-xl font-semibold"><i class="fas fa-box text-teal-500 mr-2"></i>Containerization</h3>
+              <ul class="list-disc list-inside text-left ml-4">
+                <li>Docker</li>
+              </ul>
+            </div>
+            <div class="card flex flex-col gap-2 p-6 rounded-lg stagger-in" style="animation-delay: 500ms;">
+              <h3 class="text-xl font-semibold"><i class="fas fa-project-diagram text-red-500 mr-2"></i>Orchestration
+              </h3>
+              <ul class="list-disc list-inside text-left ml-4">
+                <li>Kubernetes</li>
+                <li>Dockerswarm</li>
+              </ul>
+            </div>
+            <div class="card flex flex-col col-span-1 lg:col-span-2 gap-2 p-6 rounded-lg stagger-in"
+              style="animation-delay: 600ms;">
+              <h3 class="text-xl font-semibold"><i class="fas fa-chart-bar text-orange-500 mr-2"></i>Monitoring &
+                Logging</h3>
+              <ul class="list-disc list-inside text-left ml-4 grid grid-cols-2">
+                <li>Prometheus</li>
+                <li>OTEL</li>
+                <li>Cortex</li>
+                <li>Grafana Tempo</li>
+                <li>Grafana</li>
+                <li>Opensearch</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="experience" class="full-page-section bg-secondary">
+        <div class="bubbles"></div>
+
+        <div class="max-w-4xl text-left">
+          <h2 class="text-[#111518] text-4xl font-bold leading-tight tracking-[-0.015em] pb-8 text-center">Experience
+          </h2>
+          <div class="grid grid-cols-[40px_1fr] gap-x-4">
+            <div class="flex flex-col items-center gap-1 pt-3">
+              <div class="size-4 rounded-full bg-[#0b80ee] flex items-center justify-center text-white">
+                <i class="fas fa-briefcase text-xs"></i>
+              </div>
+              <div class="w-[1.5px] bg-[#dbe1e6] h-full grow"></div>
+            </div>
+            <div class="flex flex-1 flex-col pb-8">
+              <p class="text-[#111518] text-xl font-medium leading-normal">Devops Engineer 1 at Yellow.ai, Bangalore
+                (remote)</p>
+              <p class="text-[#60768a] text-base font-normal leading-normal">July 2022 - Present</p>
+              <h4 class="text-[#111518] text-xl font-medium leading-normal">Improved Observability:</h4>
+              <ul class="list-disc list-inside text-[#60768a] text-base font-normal leading-relaxed mt-2">
+                <li>Designed and implemented a central monitoring system for metrics and traces across multiple regions,
+                  reducing monitoring storage cost by 30% with a self-hosted solution.</li>
+                <li>Enhanced visibility by implementing various exporters and distributed Prometheus instances,
+                  automating resource scraping and improving performance management.</li>
+              </ul>
+              <h4 class="text-[#111518] text-xl font-medium leading-normal">Platform Engineering:</h4>
+              <ul class="list-disc list-inside text-[#60768a] text-base font-normal leading-relaxed mt-2">
+                <li>Reduced incident response times (MTTD/MTTR) by 70% by improving on-call processes and creating
+                  incident management tools.</li>
+                <li>Built components for an internal developer platform that optimized build times by 10%, reduced cost
+                  by 25%, and cut new service onboarding time by 90%.</li>
+                <li>Implemented and extended open-source tools like Vault, AWS-SSM, Opensearch, and Grafana.</li>
+              </ul>
+              <h4 class="text-[#111518] text-xl font-medium leading-normal">Infra & Cloud Engineering:</h4>
+              <ul class="list-disc list-inside text-[#60768a] text-base font-normal leading-relaxed mt-2">
+                <li>Provisioned and maintained infrastructure using Terraform and CloudFormation, and managed Kubernetes
+                  resources with Helm.</li>
+                <li>Executed a zero-downtime region migration from Azure to AWS and compute migration from AMD to ARM
+                  nodes, cutting costs by 20%.</li>
+              </ul>
+              <h4 class="text-[#111518] text-xl font-medium leading-normal">Software Development:</h4>
+              <ul class="list-disc list-inside text-[#60768a] text-base font-normal leading-relaxed mt-2">
+                <li>Developed various utilities and services using Python and Go, such as notification services and a
+                  central authentication system.</li>
+                <li>Designed and implemented libraries and architectural patterns for instrumenting applications for
+                  better observability.</li>
+                <li>Contributed to the development of an internal tool to deploy applications, replacing Jenkins and
+                  improving efficiency.</li>
+              </ul>
+            </div>
+
+            <div class="flex flex-col items-center gap-1">
+              <div class="w-[1.5px] bg-[#dbe1e6] h-full"></div>
+              <div class="size-4 rounded-full bg-[#0b80ee] flex items-center justify-center text-white">
+                <i class="fas fa-briefcase text-xs"></i>
+              </div>
+              <div class="w-[1.5px] bg-[#dbe1e6] h-full grow"></div>
+            </div>
+            <div class="flex flex-1 flex-col pb-8">
+              <p class="text-[#111518] text-xl font-medium leading-normal">Devops Engineer Intern at Yellow.ai,
+                Bangalore (remote)</p>
+              <p class="text-[#60768a] text-base font-normal leading-normal">Feb 2022 - June 2022</p>
+              <ul class="list-disc list-inside text-[#60768a] text-base font-normal leading-relaxed mt-2">
+                <li>Implemented a serverless application for team notifications on issues.</li>
+                <li>Managed and maintained infrastructure across various cloud providers.</li>
+              </ul>
+            </div>
+
+            <div class="flex flex-col items-center gap-1 pb-3">
+              <div class="w-[1.5px] bg-[#dbe1e6] h-full"></div>
+              <div class="size-4 rounded-full bg-[#0b80ee] flex items-center justify-center text-white">
+                <i class="fas fa-briefcase text-xs"></i>
+              </div>
+            </div>
+            <div class="flex flex-1 flex-col">
+              <p class="text-[#111518] text-xl font-medium leading-normal">SDE Intern at S759 Labs, remote</p>
+              <p class="text-[#60768a] text-base font-normal leading-normal">July 2021 - Sep 2021</p>
+              <ul class="list-disc list-inside text-[#60768a] text-base font-normal leading-relaxed mt-2">
+                <li>Worked on data collection from the internet using Golang and Python.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="education" class="full-page-section">
+        <div class="bubbles"></div>
+        <div class="w-full max-w-4xl text-center z-10">
+          <h2 class="text-4xl font-bold tracking-tight pb-12">Education</h2>
+          <div class="text-center stagger-in">
+            <i class="fas fa-graduation-cap text-5xl text-blue-600 mb-4"></i>
+            <p class="text-2xl font-bold">Integrated Dual Degree (B.Tech + M.Tech)</p>
+            <p class="text-lg">National Institute of Technology, Hamirpur</p>
+            <p class="text-md mt-1">Graduated: June 2022</p>
+            <div class="mt-4 flex justify-center gap-6">
+              <span class="text-md font-medium">CGPA (B.Tech): 8.67</span>
+              <span class="text-md font-medium">CGPA (M.Tech): 9.33</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="projects" class="full-page-section bg-secondary">
+        <div class="bubbles"></div>
+        <div class="w-full max-w-6xl text-center z-10">
+          <h2 class="text-4xl font-bold tracking-tight pb-12">Projects</h2>
+          <p class="max-w-2xl mx-auto mb-12">Here are a few examples of my work. More details can be provided upon
+            request.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="card flex flex-col text-left rounded-xl stagger-in" style="animation-delay: 0ms;">
+              <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-t-xl"
+                style='background-image: url("https://placehold.co/600x400/FF5733/FFFFFF?text=Redis+Setup");'></div>
+              <div class="p-6 flex flex-col gap-2 flex-grow">
+                <h3 class="text-lg font-bold">Redis Setup</h3>
+                <p>Code for comprensive setup of redis servers</p>
+              </div>
+              <div class="p-6 pt-0"><a href="https://github.com/shubhamwert/redis-setup" class="text-blue-600 font-bold hover:underline">View Project &rarr;</a>
+              </div>
+            </div>
+            <div class="card flex flex-col text-left rounded-xl stagger-in" style="animation-delay: 150ms;">
+              <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-t-xl"
+                style='background-image: url("https://github.com/shubhamwert/go-lambda-authorizer/blob/simpleAndFast/goAuth-overview.png?raw=true");'></div>
+              <div class="p-6 flex flex-col gap-2 flex-grow">
+                <h3 class="text-lg font-bold">AWS Authorizer</h3>
+                <p>Ready to use binary for setting up your aws authorizer</p>
+              </div>
+              <div class="p-6 pt-0"><a href="https://github.com/shubhamwert/go-lambda-authorizer" class="text-blue-600 font-bold hover:underline">View Project &rarr;</a>
+              </div>
+            </div>
+            <div class="card flex flex-col text-left rounded-xl stagger-in" style="animation-delay: 300ms;">
+              <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-t-xl"
+                style='background-image: url("https://placehold.co/600x400/FF5733/FFFFFF?text=Shorten+URL");'></div>
+              <div class="p-6 flex flex-col gap-2 flex-grow">
+                <h3 class="text-lg font-bold">Url Shortner</h3>
+                <p>Simple URL shortner written in golang</p>
+              </div>
+              <div class="p-6 pt-0"><a href="https://github.com/shubhamwert/urlshortner" class="text-blue-600 font-bold hover:underline">View Project &rarr;</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="blogs" class="full-page-section">
+        <div class="bubbles"></div>
+        <div class="w-full max-w-4xl text-center z-10">
+          <h2 class="text-4xl font-bold tracking-tight pb-12">My Writings</h2>
+          <p class="max-w-2xl mx-auto mb-12">I occasionally write about technology, DevOps, and cloud-native development
+            on Medium. Here are a couple of placeholders.</p>
+          <div class="space-y-8">
+            <a href="#" class="card block text-left rounded-xl stagger-in" style="animation-delay: 0ms;">
+              <div class="p-6">
+                <p class="text-sm text-blue-500">Cloud & DevOps</p>
+                <h3 class="text-xl font-bold mt-1">A Deep Dive into Self-Hosted Monitoring with Prometheus</h3>
+                <p class="mt-2">Exploring the architecture, benefits, and challenges of building and maintaining a
+                  cost-effective, self-hosted monitoring stack.</p>
+                <p class="text-sm mt-4">Read More &rarr;</p>
+              </div>
+            </a>
+            <a href="#" class="card block text-left rounded-xl stagger-in" style="animation-delay: 150ms;">
+              <div class="p-6">
+                <p class="text-sm text-blue-500">Cost Optimization</p>
+                <h3 class="text-xl font-bold mt-1">Optimizing Cloud Costs: A Practical Guide to Migrating from AMD to
+                  ARM</h3>
+                <p class="mt-2">A case study on the migration process, performance benchmarks, and the significant cost
+                  savings achieved.</p>
+                <p class="text-sm mt-4">Read More &rarr;</p>
+              </div>
+            </a>
+          </div>
+          <a href="https://medium.com/@s.k.thakur.contact" target="_blank" rel="noopener noreferrer"
+            class="mt-12 inline-block min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-blue-600 text-white text-base font-bold transition-opacity duration-300 hover:opacity-90">
+            <span class="truncate">Visit My Medium Profile</span>
+          </a>
+        </div>
+      </section>
+
+      <footer id="contact" class="full-page-section bg-secondary">
+        <div class="bubbles"></div>
+        <div class="text-center max-w-2xl z-10">
+          <h2 class="text-4xl md:text-5xl font-bold tracking-tight">Get In Touch</h2>
+          <p class="text-lg mt-4 mb-8">
+            I'm always open to discussing new projects, creative ideas, or opportunities. Feel free to reach out.
+          </p>
+          <a href="mailto:contact.shubhamthakur@gmail.com"
+            class="inline-block min-w-[84px] cursor-pointer rounded-full h-12 px-8 bg-blue-600 text-white text-base font-bold transition-opacity duration-300 hover:opacity-90">
+            <span class="text-center">Email Me</span>
+          </a>
+          <div class="flex justify-center gap-8 mt-12">
+            <a href="https://www.linkedin.com/in/sk-thakur" target="_blank" rel="noopener noreferrer"
+              class="transition-transform duration-300 hover:scale-110 hover:text-blue-500"><i
+                class="fab fa-linkedin-in text-3xl"></i></a>
+            <a href="https://github.com/shubhamwert" target="_blank" rel="noopener noreferrer"
+              class="transition-transform duration-300 hover:scale-110 hover:text-blue-500"><i
+                class="fab fa-github text-3xl"></i></a>
+            <a href="https://medium.com/@s.k.thakur.contact" target="_blank" rel="noopener noreferrer"
+              class="transition-transform duration-300 hover:scale-110 hover:text-blue-500"><i
+                class="fab fa-medium text-3xl"></i></a>
+          </div>
+          <p class="text-sm font-normal mt-12">&copy; 2025 Shubham Thakur. All rights reserved.</p>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- Dark Mode Logic ---
+      const themeToggle = document.getElementById('checkbox');
+      const currentTheme = localStorage.getItem('theme');
+
+      if (currentTheme) {
+        document.body.classList.toggle('dark', currentTheme === 'dark');
+        themeToggle.checked = currentTheme === 'dark';
+      }
+
+      themeToggle.addEventListener('change', function () {
+        document.body.classList.toggle('dark', this.checked);
+        localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+      });
+
+      // --- Hero Canvas Animation (three.js) ---
+      const heroCanvas = document.getElementById('hero-canvas');
+      if (heroCanvas) {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const particlesCount = 5000;
+        const positions = new Float32Array(particlesCount * 3);
+        for (let i = 0; i < particlesCount * 3; i++) {
+          positions[i] = (Math.random() - 0.5) * 10;
+        }
+        const particlesGeometry = new THREE.BufferGeometry();
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+          size: 0.005,
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.7
+        });
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particles);
+        camera.position.z = 2;
+
+        const mouse = { x: 0, y: 0 };
+        document.addEventListener('mousemove', (event) => {
+          mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+          mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        const clock = new THREE.Clock();
+        const animate = () => {
+          const elapsedTime = clock.getElapsedTime();
+          particles.rotation.y = elapsedTime * 0.05;
+          particles.rotation.x = elapsedTime * 0.02;
+
+          // Parallax effect
+          camera.position.x += (mouse.x * 0.5 - camera.position.x) * 0.02;
+          camera.position.y += (mouse.y * 0.5 - camera.position.y) * 0.02;
+
+          renderer.render(scene, camera);
+          window.requestAnimationFrame(animate);
+        };
+        animate();
+
+        window.addEventListener('resize', () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        });
+      }
+
+      // --- CSS Bubble Animation ---
+      const bubbleContainers = document.querySelectorAll('.bubbles');
+      bubbleContainers.forEach(container => {
+        const bubbleCount = 20;
+        for (let i = 0; i < bubbleCount; i++) {
+          const bubble = document.createElement('span');
+          bubble.className = 'bubble';
+          const size = Math.random() * 100 + 20 + 'px';
+          bubble.style.width = size;
+          bubble.style.height = size;
+          bubble.style.left = Math.random() * 100 + '%';
+          bubble.style.animationDuration = (Math.random() * 15 + 10) + 's';
+          bubble.style.animationDelay = Math.random() * 10 + 's';
+          container.appendChild(bubble);
+        }
+      });
+
+      // --- Scroll-triggered Animations ---
+      const sections = document.querySelectorAll('.full-page-section');
+      const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            const children = entry.target.querySelectorAll('.stagger-in');
+            children.forEach((child, index) => {
+              child.style.animationDelay = `${index * 120}ms`;
+            });
+          }
+        });
+      }, observerOptions);
+      sections.forEach(section => { observer.observe(section); });
+    });
+
+    const sections = document.querySelectorAll('.full-page-section');
+        const navLinks = document.querySelectorAll('.side-nav a');
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.5 };
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              const children = entry.target.querySelectorAll('.stagger-in');
+              children.forEach((child, index) => {
+                  child.style.animationDelay = `${index * 120}ms`;
+              });
+
+              navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+              });
+            }
+          });
+        }, observerOptions);
+        sections.forEach(section => { observer.observe(section); });
+  </script>
+</body>
+
+</html>
